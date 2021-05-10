@@ -180,6 +180,7 @@ try {
 			
 			[switch]$InPeakHours,
 			
+			[switch]$InRampHours,				
 			[Parameter(Mandatory = $true)]
 			[hashtable]$Res
 		)
@@ -197,7 +198,11 @@ try {
 			$res.nVMsToStart = $MinRunningVMs - $nRunningVMs
 			Write-Log "Number of running session host is less than minimum required. Need to start $($res.nVMsToStart) VMs"
 		}
-		
+		#Adjust nRunningCores variable to add extra VM's for ramp up periods
+		if ($InRampHours) {
+			Write-Log "[In ramp-up hours] Subtracting $ExtraRampCores cores from $nRunningCores cores to ensure adequate capacity in calculation"
+			[int]$nRunningCores = [math]::Ceiling($nRunningCores - $ExtraRampCores)
+		}																																	
 		if ($InPeakHours) {
 			[double]$nUserSessionsPerCore = $nUserSessions / $nRunningCores
 			# In peak hours: check if current capacity is meeting the user demands
@@ -501,6 +506,34 @@ try {
 
 	#endregion
 
+	#region determine if on/off ramp-up hours
+
+	# Convert local time, begin ramp-up time & end ramp-up time from UTC to local time
+	$CurrentDateTime = Get-LocalDateTime
+	$BeginRampDateTime = [datetime]::Parse($CurrentDateTime.ToShortDateString() + ' ' + $BeginRampTime)
+	$EndRampDateTime = [datetime]::Parse($CurrentDateTime.ToShortDateString() + ' ' + $EndRampTime)
+
+	# Adjust ramp-up times to make sure begin ramp-up time is always before end ramp-up time
+	if ($EndRampDateTime -lt $BeginRampDateTime) {
+		if ($CurrentDateTime -lt $EndRampDateTime) {
+			$BeginRampDateTime = $BeginRampDateTime.AddDays(-1)
+		}
+		else {
+			$EndRampDateTime = $EndRampDateTime.AddDays(1)
+		}
+	}
+
+	Write-Log "Using current time: $($CurrentDateTime.ToString('yyyy-MM-dd HH:mm:ss')), begin ramp-up time: $($BeginRampDateTime.ToString('yyyy-MM-dd HH:mm:ss')), end ramp-up time: $($EndRampDateTime.ToString('yyyy-MM-dd HH:mm:ss'))"
+
+	[bool]$InRampHours = ($BeginRampDateTime -le $CurrentDateTime -and $CurrentDateTime -le $EndRampDateTime)
+	if ($InRampHours) {
+		Write-Log 'In ramp-up hours'
+	}
+	else {
+		Write-Log 'Off ramp-up hours'
+	}
+
+	#endregion										  		   
 
 	#region get all session hosts, VMs & user sessions info and compute workload
 
@@ -621,7 +654,7 @@ try {
 		nVMsToStop    = 0
 	}
 
-	Set-nVMsToStartOrStop -nRunningVMs $nRunningVMs -nRunningCores $nRunningCores -nUserSessions $nUserSessions -MaxUserSessionsPerVM $HostPool.MaxSessionLimit -InPeakHours:$InPeakHours -Res $Ops
+	Set-nVMsToStartOrStop -nRunningVMs $nRunningVMs -nRunningCores $nRunningCores -nUserSessions $nUserSessions -MaxUserSessionsPerVM $HostPool.MaxSessionLimit -InPeakHours:$InPeakHours -InRampHours:$InRampHours -Res $Ops
 
 	#endregion
 

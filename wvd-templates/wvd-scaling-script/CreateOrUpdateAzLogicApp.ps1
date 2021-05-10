@@ -82,7 +82,7 @@ param(
 	[string]$WebhookURI,
 
 	[Parameter(mandatory = $false)]
-	[string]$ArtifactsURI = 'https://raw.githubusercontent.com/Azure/RDS-Templates/master/wvd-templates/wvd-scaling-script'
+	[string]$ArtifactsURI = 'https://raw.githubusercontent.com/Iserv-Group/RDS-Templates/master/wvd-templates/wvd-scaling-script'
 )
 
 $UseRDSAPI = !$UseARMAPI
