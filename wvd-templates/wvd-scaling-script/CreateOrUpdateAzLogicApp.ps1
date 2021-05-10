@@ -56,9 +56,15 @@ param(
 
 	[Parameter(mandatory = $false)]
 	[string]$EndPeakTime = '17:00',
+	
+	[Parameter(mandatory = $false)]
+	[string]$BeginRampTime = '09:00',
 
 	[Parameter(mandatory = $false)]
-	[string]$TimeDifference = '-7:00',
+	[string]$EndRampTime = '12:00',
+
+	[Parameter(mandatory = $false)]
+	[string]$TimeDifference = '-4:00',
 
 	[Parameter(mandatory = $false)]
 	[double]$SessionThresholdPerCPU = 1,
@@ -208,6 +214,9 @@ elseif ($SessionHostsList.Count -le $MinimumNumberOfRDSH) {
 	"TimeDifference"                = $TimeDifference
 	"BeginPeakTime"                 = $BeginPeakTime
 	"EndPeakTime"                   = $EndPeakTime
+    "ExtraRampCores"                = $ExtraRampCores 
+    "BeginRampTime"                 = $beginRampTime                           
+    "EndRampTime"                   = $endRampTime  
 	"SessionThresholdPerCPU"        = $SessionThresholdPerCPU
 	"MinimumNumberOfRDSH"           = $MinimumNumberOfRDSH
 	"LimitSecondsToForceLogOffUser" = $LimitSecondsToForceLogOffUser
