@@ -75,6 +75,9 @@ try {
 	[string]$TimeDifference = $RqtParams.TimeDifference
 	[string]$BeginPeakTime = $RqtParams.BeginPeakTime
 	[string]$EndPeakTime = $RqtParams.EndPeakTime
+	[string]$BeginRampTime = $RqtParams.BeginRampTime
+	[string]$EndRampTime = $RqtParams.EndRampTime
+	[int]$ExtraRampCores = $RqtParams.ExtraRampCores											 
 	[double]$UserSessionThresholdPerCore = $RqtParams.SessionThresholdPerCPU
 	[int]$MinRunningVMs = $RqtParams.MinimumNumberOfRDSH
 	[int]$LimitSecondsToForceLogOffUser = $RqtParams.LimitSecondsToForceLogOffUser
@@ -202,7 +205,7 @@ try {
 		if ($InRampHours) {
 			Write-Log "[In ramp-up hours] Subtracting $ExtraRampCores cores from $nRunningCores cores to ensure adequate capacity in calculation"
 			[int]$nRunningCores = [math]::Ceiling($nRunningCores - $ExtraRampCores)
-		}																																	
+		}
 		if ($InPeakHours) {
 			[double]$nUserSessionsPerCore = $nUserSessions / $nRunningCores
 			# In peak hours: check if current capacity is meeting the user demands
