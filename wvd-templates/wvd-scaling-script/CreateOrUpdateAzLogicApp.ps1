@@ -58,6 +58,9 @@ param(
 	[string]$EndPeakTime = '17:00',
 	
 	[Parameter(mandatory = $false)]
+	[string]$ExtraRampCores  = '2',
+	
+	[Parameter(mandatory = $false)]
 	[string]$BeginRampTime = '09:00',
 
 	[Parameter(mandatory = $false)]

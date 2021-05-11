@@ -73,6 +73,9 @@ try {
 	[string]$TimeDifference = $RqtParams.TimeDifference
 	[string]$BeginPeakTime = $RqtParams.BeginPeakTime
 	[string]$EndPeakTime = $RqtParams.EndPeakTime
+	[string]$BeginRampTime = $RqtParams.BeginRampTime
+	[string]$EndRampTime = $RqtParams.EndRampTime
+	[int]$ExtraRampCores = $RqtParams.ExtraRampCores													 
 	[double]$UserSessionThresholdPerCore = $RqtParams.SessionThresholdPerCPU
 	[int]$MinRunningVMs = $RqtParams.MinimumNumberOfRDSH
 	[int]$LimitSecondsToForceLogOffUser = $RqtParams.LimitSecondsToForceLogOffUser
@@ -89,9 +92,7 @@ try {
 	if ([string]::IsNullOrWhiteSpace($EnvironmentName)) {
 		$EnvironmentName = 'AzureCloud'
 	}
-	[string]$BeginRampTime = $RqtParams.BeginRampTime
-	[string]$EndRampTime = $RqtParams.EndRampTime
-	[int]$ExtraRampCores = $RqtParams.ExtraRampCores										 								   
+								 								   
 	[int]$StatusCheckTimeOut = Get-PSObjectPropVal -Obj $RqtParams -Key 'StatusCheckTimeOut' -Default (60 * 60) # 1 hr
 	# [int]$SessionHostStatusCheckSleepSecs = 30
 	[string[]]$DesiredRunningStates = @('Available', 'NeedsAssistance')
@@ -174,7 +175,7 @@ try {
 			
 			[switch]$InPeakHours,
 			
-			[switch]$InRampHours,						
+			[switch]$InRampHours,
 			[Parameter(Mandatory = $true)]
 			[hashtable]$Res
 		)
@@ -192,7 +193,7 @@ try {
 			$res.nVMsToStart = $MinRunningVMs - $nRunningVMs
 			Write-Log "Number of running session host is less than minimum required. Need to start $($res.nVMsToStart) VMs"
 		}
-				#Adjust nRunningCores variable to add extra VM's for ramp up periods
+		#Adjust nRunningCores variable to add extra VM's for ramp up periods
 		if ($InRampHours) {
 			Write-Log "[In ramp-up hours] Subtracting $ExtraRampCores cores from $nRunningCores cores to ensure adequate capacity in calculation"
 			[int]$nRunningCores = [math]::Ceiling($nRunningCores - $ExtraRampCores)
