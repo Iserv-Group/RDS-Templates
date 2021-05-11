@@ -35,7 +35,7 @@ $UseRDSAPI = !$UseARMAPI
 # //todo refactor, improve error logging, externalize, centralize vars
 
 # Setting ErrorActionPreference to stop script execution when error occurs
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Continue"
 
 # Initializing variables
 [string]$RunbookName = "WVDAutoScaleRunbook"
