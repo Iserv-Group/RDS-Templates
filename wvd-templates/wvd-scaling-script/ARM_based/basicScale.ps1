@@ -197,6 +197,7 @@ try {
 		if ($InRampHours) {
 			Write-Log "[In ramp-up hours] Subtracting $ExtraRampCores cores from $nRunningCores cores to ensure adequate capacity in calculation"
 			[int]$nRunningCores = [math]::Ceiling($nRunningCores - $ExtraRampCores)
+		}
 		if ($InPeakHours) {
 			[double]$nUserSessionsPerCore = $nUserSessions / $nRunningCores
 			# In peak hours: check if current capacity is meeting the user demands
